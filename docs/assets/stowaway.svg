@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Stowaway</title>
+  <!-- Rounded hexagons -->
+  <path d="M219.2 41.2Q256.0 20.0 292.8 41.2L423.6 116.8Q460.4 138.0 460.4 180.5L460.4 331.5Q460.4 374.0 423.6 395.2L292.8 470.8Q256.0 492.0 219.2 470.8L88.4 395.2Q51.6 374.0 51.6 331.5L51.6 180.5Q51.6 138.0 88.4 116.8Z" fill="#0B5A92"/>
+  <path d="M228.6 95.8Q256.0 80.0 283.4 95.8L381.0 152.2Q408.4 168.0 408.4 199.7L408.4 312.3Q408.4 344.0 381.0 359.8L283.4 416.2Q256.0 432.0 228.6 416.2L131.0 359.8Q103.6 344.0 103.6 312.3L103.6 199.7Q103.6 168.0 131.0 152.2Z" fill="#2B8CD6"/>
+  <!-- Clipboard -->
+  <rect x="186" y="170" width="140" height="180" rx="22" fill="none" stroke="#FFE3D4" stroke-width="20"/>
+  <rect x="218" y="150" width="76" height="40" rx="14" fill="#0B3B60"/>
+  <path d="M220 232h72M220 280h44" stroke="#FFE3D4" stroke-width="18" stroke-linecap="round"/>
+</svg>

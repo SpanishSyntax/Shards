@@ -1,11 +1,19 @@
 <p align="center">
-  <img src="assets/stowaway.svg" width="140" alt="Stowaway Logo">
+  <img src="assets/banner.png" alt="Stowaway Shards Banner" width="100%" />
 </p>
 
-<h1 align="center">Stowaway</h1>
+# Shards 🧊
 
-**Stowaway** is a lightweight Wayland clipboard manager and emoji/character picker overlay for the **AstraSuite** ecosystem, built with Qt 6 and QML.
+A Wayland clipboard manager and character picker overlay for the AstraSuite and Frost ecosystems, built with Qt 6, C++20, and QML.
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![C++20](https://img.shields.io/badge/C++-20-00599C.svg?logo=c%2B%2B&logoColor=white)](CMakeLists.txt)
+[![Qt 6.5+](https://img.shields.io/badge/Qt-6.5+-41CD52.svg?logo=qt&logoColor=white)](CMakeLists.txt)
+
+Shards (packaged and invoked as `stowaway`) provides a cursor-anchored Wayland layer overlay that docks silently in memory until summoned. It supports dynamic cursor tracking, multi-category clipboard history, unicode symbol filtering, and automated keystroke pasting.
+
+> [!TIP]
+> **Documentation Site:** Complete API references, component parameters, and compositor configuration guides are available at the **[Shards Documentation Site](https://spanishsyntax.github.io/Shards)**.
 
 ---
 
@@ -25,15 +33,17 @@ When sea ice fractures under thermal contraction, it leaves behind small, brilli
 
 - Dynamic cursor-anchored overlay with boundary clamping and edge flipping
 - Rich clipboard history with auto-categorization (Text, Code, URLs, Colors, Images)
-- Persistent JSON storage with pinning support
+- Persistent JSON and SQLite storage with item pinning support
 - Unicode emoji picker with fuzzy search
 - Kaomoji and Unicode symbol pickers
-- Auto-paste via `wtype`
+- Auto-paste via `wtype` with automated target refocusing
 - Material 3 Expressive UI with Caelestia color palette integration
+
+---
 
 ## Dependencies
 
-### Build
+### Build Dependencies
 
 - C++20 compiler (GCC 11+ or Clang 14+)
 - CMake 3.19+
@@ -41,15 +51,18 @@ When sea ice fractures under thermal contraction, it leaves behind small, brilli
 - pkg-config
 - Qt 6.5+ (Core, Qml, Quick, QuickControls2, QuickEffects, Svg)
 
-### Runtime
+### Runtime Dependencies
 
 - `qt6-base`, `qt6-declarative`, `qt6-svg`
 - `quickshell`
 - `wtype` (for auto-paste)
+- `wl-clipboard` / `cliphist`
 
-### Optional
+### Optional Integration
 
 - `caelestia-cli`: dynamic color palette and accent syncing
+
+---
 
 ## Installation
 
@@ -66,12 +79,14 @@ paru -S astra-stowaway-git
 ### Manual Installation (From Source)
 
 ```bash
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 sudo cmake --install build
 ```
 
 This installs the `stowaway` binary to `/usr/bin/stowaway`.
+
+---
 
 ## Usage
 
@@ -105,6 +120,7 @@ stowaway --reset-size       # Reset popup dimensions and scale to default (390x5
 Stowaway features a background daemon mode that keeps the QML engine, plugins, and custom fonts resident in RAM with the Wayland layer surface unmapped (consuming 0 GPU/CPU resources when hidden). When invoked via a hotkey, the overlay opens **instantaneously (< 10ms)** instead of cold-booting Quickshell.
 
 #### Starting and Managing the Daemon
+
 ```bash
 stowaway --daemon           # Start background daemon (starts hidden, stays resident)
 stowaway --status           # Check daemon status
@@ -112,12 +128,15 @@ stowaway --quit             # Terminate background daemon
 ```
 
 #### Running as a systemd User Service
+
 Stowaway provides a systemd user unit for automatic background launch with your desktop session:
+
 ```bash
 systemctl --user enable --now stowaway
 ```
 
 #### Disabling Daemon Mode
+
 If you prefer Stowaway to run as a one-shot process that exits completely when closed:
 - **CLI**: Run `stowaway --disable-daemon` to disable daemon mode in your configuration and stop any active daemon.
 - **Config**: Set `"daemon": false` in `~/.config/caelestia/stowaway.json` or `~/.config/stowaway/config.json`:
@@ -134,8 +153,8 @@ If you prefer Stowaway to run as a one-shot process that exits completely when c
 Stowaway provides full control over window dimensions and content scaling (fonts, icons, card sizes, and padding):
 
 1. **Keyboard Shortcuts & Zooming**:
-   - `Ctrl` + `+` or `Ctrl` + `=`: Enlarge popup size and zoom in UI scale (increases font and icon sizes)
-   - `Ctrl` + `-`: Shrink popup size and zoom out UI scale (decreases font and icon sizes)
+   - `Ctrl` + `+` or `Ctrl` + `=`: Enlarge popup size and zoom in UI scale
+   - `Ctrl` + `-`: Shrink popup size and zoom out UI scale
    - `Ctrl` + `0`: Reset popup size and scale to default (390x500, 1.0x)
 
 2. **Configuration File**:
@@ -147,18 +166,6 @@ Stowaway provides full control over window dimensions and content scaling (fonts
      "scale": 1.25
    }
    ```
-   Or integrate into `~/.config/caelestia/shell-tokens.json`:
-   ```json
-   {
-     "scale": 1.25,
-     "sizes": {
-       "stowaway": {
-         "width": 480,
-         "height": 620
-       }
-     }
-   }
-   ```
 
 3. **Command-Line & Environment Variables**:
    - Launch with `-W <width>` / `-H <height>`, `--size <WxH>`, and `--scale <factor>` (e.g. `--scale 1.3`).
@@ -166,7 +173,13 @@ Stowaway provides full control over window dimensions and content scaling (fonts
 
 ### Hyprland Animations
 
-Add to `~/.config/caelestia/hypr-user.lua`:
+Add to `~/.config/hypr/hyprland.conf`:
+
+```ini
+layerrule = noanim, namespace:stowaway
+```
+
+Or in `~/.config/caelestia/hypr-user.lua`:
 
 ```lua
 hl.layer_rule({
@@ -175,10 +188,11 @@ hl.layer_rule({
     },
     no_anim = true,
 })
-
 ```
 
-## Credits and Licensing
+---
+
+## License
 
 This project is licensed under the GNU General Public License v3.0 (GPLv3).
 
