@@ -9,6 +9,7 @@ A Wayland clipboard manager and character picker overlay for the AstraSuite and 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/SpanishSyntax/Shards/blob/main/LICENSE)
 [![C++20](https://img.shields.io/badge/C++-20-00599C.svg?logo=c%2B%2B&logoColor=white)](CMakeLists.txt)
 [![Qt 6.5+](https://img.shields.io/badge/Qt-6.5+-41CD52.svg?logo=qt&logoColor=white)](CMakeLists.txt)
+[![Nix Flake](https://img.shields.io/badge/Nix-Flake-5277C3.svg?logo=nixos&logoColor=white)](https://github.com/SpanishSyntax/Shards/blob/main/flake.nix)
 
 Shards (packaged and invoked as `stowaway`) provides a cursor-anchored Wayland layer overlay that docks silently in memory until summoned. It supports dynamic cursor tracking, multi-category clipboard history, unicode symbol filtering, and automated keystroke pasting.
 
@@ -58,7 +59,10 @@ stowaway --status
 ## Table of Contents
 
 - [Getting Started](getting-started.md)
-  - [Installation](getting-started.md#installation)
+  - [Installation Guide](getting-started.md#installation)
+  - [Nix Flake & Home Manager](getting-started.md#nix-flake--home-manager-recommended)
+  - [Arch Linux / AUR](getting-started.md#arch-linux--aur)
+  - [Building from Source](getting-started.md#manual-compilation-from-source)
   - [Quick Start](getting-started.md#quick-start)
   - [Daemon Configuration](getting-started.md#daemon-configuration)
   - [Systemd User Service](getting-started.md#systemd-user-service)

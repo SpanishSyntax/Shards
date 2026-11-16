@@ -1,6 +1,9 @@
 - **Getting Started**
   - [Overview](README.md)
-  - [Installation](getting-started.md#installation)
+  - [Installation Guide](getting-started.md#installation)
+  - [Nix Flake & Home Manager](getting-started.md#nix-flake--home-manager-recommended)
+  - [Arch Linux / AUR](getting-started.md#arch-linux--aur)
+  - [Building from Source](getting-started.md#manual-compilation-from-source)
   - [Quick Start](getting-started.md#quick-start)
   - [Daemon Configuration](getting-started.md#daemon-configuration)
   - [Systemd User Service](getting-started.md#systemd-user-service)

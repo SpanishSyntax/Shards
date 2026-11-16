@@ -26,6 +26,52 @@ This guide explains how to build, install, and configure Stowaway (Shards) withi
 
 ---
 
+### Nix Flake & Home Manager (Recommended)
+
+Stowaway is packaged as a Nix Flake with native Home Manager module support.
+
+#### Run Directly via Nix
+
+```bash
+nix run github:SpanishSyntax/Shards
+```
+
+#### Flake Input
+Add Shards to your `flake.nix`:
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    shards = {
+      url = "github:SpanishSyntax/Shards";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { self, nixpkgs, shards, ... }: {
+    # System or Home Manager configuration
+  };
+}
+```
+
+#### Home Manager Module
+Enable Stowaway in your Home Manager configuration:
+```nix
+{ inputs, pkgs, ... }: {
+  imports = [
+    inputs.shards.homeManagerModules.default
+  ];
+
+  programs.stowaway = {
+    enable = true;
+    daemon.enable = true; # runs background daemon for instant overlay (<10ms)
+  };
+  # (alias programs.shards.enable = true is also supported)
+}
+```
+
+---
+
 ### Arch Linux / AUR
 
 Install using your preferred AUR helper:

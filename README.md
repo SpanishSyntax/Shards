@@ -9,6 +9,7 @@ A Wayland clipboard manager and character picker overlay for the AstraSuite and 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![C++20](https://img.shields.io/badge/C++-20-00599C.svg?logo=c%2B%2B&logoColor=white)](CMakeLists.txt)
 [![Qt 6.5+](https://img.shields.io/badge/Qt-6.5+-41CD52.svg?logo=qt&logoColor=white)](CMakeLists.txt)
+[![Nix Flake](https://img.shields.io/badge/Nix-Flake-5277C3.svg?logo=nixos&logoColor=white)](flake.nix)
 
 Shards (packaged and invoked as `stowaway`) provides a cursor-anchored Wayland layer overlay that docks silently in memory until summoned. It supports dynamic cursor tracking, multi-category clipboard history, unicode symbol filtering, and automated keystroke pasting.
 
@@ -65,6 +66,51 @@ When sea ice fractures under thermal contraction, it leaves behind small, brilli
 ---
 
 ## Installation
+
+### Nix Flake & Home Manager (Recommended)
+
+Shards is packaged as a Nix Flake with native Home Manager module support.
+
+#### Run Directly via Nix
+```bash
+nix run github:SpanishSyntax/Shards
+```
+
+#### Flake Input
+Add Shards to your `flake.nix`:
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    shards = {
+      url = "github:SpanishSyntax/Shards";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { self, nixpkgs, shards, ... }: {
+    # NixOS or Home Manager configuration
+  };
+}
+```
+
+#### Home Manager Module
+Enable Stowaway in your Home Manager configuration:
+```nix
+{ inputs, pkgs, ... }: {
+  imports = [
+    inputs.shards.homeManagerModules.default
+  ];
+
+  programs.stowaway = {
+    enable = true;
+    daemon.enable = true; # runs background daemon for instant overlay (<10ms)
+  };
+  # (alias programs.shards.enable = true is also supported)
+}
+```
+
+---
 
 ### Arch Linux / AUR
 
