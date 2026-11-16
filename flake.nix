@@ -1,5 +1,5 @@
 {
-  description = "Shards (Stowaway) - Wayland clipboard & character picker overlay";
+  description = "Stowaway - Wayland clipboard & character picker overlay";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -40,11 +40,14 @@
     homeManagerModules.default = { config, lib, pkgs, ... }:
       with lib;
       let
-        cfg = config.programs.shards;
         pkg = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+        stowawayCfg = config.programs.stowaway;
+        shardsCfg = config.programs.shards;
+        enabled = stowawayCfg.enable || shardsCfg.enable;
+        activeCfg = if stowawayCfg.enable then stowawayCfg else shardsCfg;
       in {
-        options.programs.shards = {
-          enable = mkEnableOption "Shards (Stowaway) Wayland clipboard & emoji overlay";
+        options.programs.stowaway = {
+          enable = mkEnableOption "Stowaway Wayland clipboard & emoji overlay";
           package = mkOption {
             type = types.package;
             default = pkg;
@@ -59,17 +62,33 @@
           };
         };
 
-        config = mkIf cfg.enable {
-          home.packages = [ cfg.package ];
+        options.programs.shards = {
+          enable = mkEnableOption "Alias for programs.stowaway";
+          package = mkOption {
+            type = types.package;
+            default = pkg;
+            description = "The stowaway package to use.";
+          };
+          daemon = {
+            enable = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Whether to run Stowaway as a background daemon for instant overlay (<10ms).";
+            };
+          };
+        };
 
-          systemd.user.services.stowaway = mkIf cfg.daemon.enable {
+        config = mkIf enabled {
+          home.packages = [ activeCfg.package ];
+
+          systemd.user.services.stowaway = mkIf activeCfg.daemon.enable {
             Unit = {
               Description = "Stowaway Wayland Clipboard Daemon";
               PartOf = [ "graphical-session.target" ];
               After = [ "graphical-session.target" ];
             };
             Service = {
-              ExecStart = "${cfg.package}/bin/stowaway --daemon --foreground";
+              ExecStart = "${activeCfg.package}/bin/stowaway --daemon --foreground";
               Restart = "on-failure";
               RestartSec = "1s";
             };

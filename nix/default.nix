@@ -46,8 +46,8 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
-    description = "A Wayland clipboard manager and character picker overlay for the AstraSuite and Frost ecosystems";
-    homepage = "https://github.com/SpanishSyntax/Shards";
+    description = "A Wayland clipboard manager and character picker overlay for AstraSuite";
+    homepage = "https://github.com/AstraSuite/Stowaway";
     license = licenses.gpl3Only;
     platforms = platforms.linux;
     mainProgram = "stowaway";
