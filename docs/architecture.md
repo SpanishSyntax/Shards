@@ -8,41 +8,20 @@ Shards (Stowaway) is engineered as a hybrid C++20 and Declarative QML system, se
 
 The runtime architecture is decoupled into three primary tiers:
 
-```
-┌────────────────────────────────────────────────────────┐
-│                   Compositor & User                    │
-│            (Hyprland / Sway / Wayland Clients)         │
-└───────────────────────────┬────────────────────────────┘
-                            │ Hotkey / CLI Invocation
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│                   stowaway Launcher                    │
-│ ┌──────────────────────┐      ┌──────────────────────┐ │
-│ │  sendSocketCommand   │◄────►│  /tmp/stowaway.sock  │ │
-│ └──────────────────────┘      └──────────────────────┘ │
-└───────────────────────────┬────────────────────────────┘
-                            │ UNIX Domain Socket ("tab:0")
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│               Stowaway Resident Daemon                 │
-│                                                        │
-│  ┌─────────────────────────┐ ┌───────────────────────┐ │
-│  │     C++ Core Plugin     │ │  Quickshell Host      │ │
-│  │ • AppController         │ │ • shell.qml           │ │
-│  │ • ClipboardManager      │ │ • wlr-layer-shell     │ │
-│  │ • EmojiService          │ │ • Spring animations   │ │
-│  │ • PositionController    │ │ • Material 3 tokens   │ │
-│  │ • PasteManager          │ │                       │ │
-│  └────────────┬────────────┘ └───────────┬───────────┘ │
-└───────────────┼──────────────────────────┼─────────────┘
-                │                          │
-        wl-paste / cliphist         wtype auto-paste
-                │                          │
-                ▼                          ▼
-┌────────────────────────────────────────────────────────┐
-│                    Host Desktop                        │
-│            (Active Application Window)                 │
-└────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    User["Compositor and User (Hyprland / Sway / Wayland Clients)"] -->|"Hotkey / CLI Invocation"| Launcher["shards Launcher (sendSocketCommand)"]
+    Launcher <-->|"UNIX Domain Socket"| Daemon["Shards Resident Daemon"]
+
+    subgraph DaemonBox["Shards Resident Daemon"]
+        Cpp["C++ Core Plugin (AppController, ClipboardManager, EmojiService, PasteManager)"]
+        Qml["Quickshell Host (shell.qml, wlr-layer-shell, Material 3 Tokens)"]
+    end
+
+    Daemon --> Cpp
+    Daemon --> Qml
+    Cpp -->|"wl-paste / cliphist"| Desktop["Host Desktop (Active Application Window)"]
+    Qml -->|"wtype auto-paste"| Desktop
 ```
 
 ---
@@ -98,17 +77,13 @@ Stowaway implements a two-stage dismissal and injection pipeline:
 
 $$\text{Dismissal Pipeline}: \quad \text{Select Item} \longrightarrow \text{Copy to Wayland Clipboard} \longrightarrow \text{Close Overlay} \longrightarrow \text{Refocus Target Window} \longrightarrow \text{Dispatch } \texttt{Ctrl+V}$$
 
-```
-Overlay Open (Has Focus)
-       │
-       ▼ [User presses Enter / clicks item]
-1. Write to wl-clipboard (text or image)
-2. Begin exit animation (spring shrink & fade)
-3. Unmap Wayland layer surface
-       │
-       ▼ [Layer completely unmapped]
-4. Focus target window address via Hyprland IPC
-5. Execute wtype -M ctrl -k v -m ctrl
+```mermaid
+flowchart TD
+    Open["Overlay Open (Has Focus)"] -->|"User presses Enter or clicks item"| Copy["1. Write to wl-clipboard (text or image)"]
+    Copy --> Anim["2. Begin exit animation (spring shrink and fade)"]
+    Anim --> Unmap["3. Unmap Wayland layer surface"]
+    Unmap -->|"Layer completely unmapped"| Focus["4. Focus target window address via Hyprland IPC"]
+    Focus --> Paste["5. Execute wtype -M ctrl -k v -m ctrl"]
 ```
 
 This guarantees that the target application (terminal, browser, editor) receives the paste event reliably without losing keyboard focus.
